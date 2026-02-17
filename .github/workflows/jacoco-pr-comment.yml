@@ -16,17 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v7
+        id: download-artifact
+        uses: actions/download-artifact@v6
         with:
           name: jacoco-report
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ github.workspace }}/jacoco
 
       - name: Add JaCoCo coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
         with:
           paths: |
-            ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+            ${{ steps.download-artifact.outputs.download-path }}/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Code Coverage
           update-comment: true
